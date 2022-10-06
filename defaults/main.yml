@@ -1,3 +1,4 @@
 ---
 journald_config: {}
-journald_wipe_persistent: false
+journald_wipe_persistent: False
+journald_config_path: /etc/systemd/journald.conf
