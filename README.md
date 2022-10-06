@@ -6,16 +6,27 @@ The configuration options can be obtained from [journald.conf(5)](https://www.fr
 You can ask this role to wipe the persistent journal directory at `/var/log/journal`.
 Note that this changes journald's behaviour if the storage was set to `auto`.
 
+To get the current systemd-journald running configuration run: `systemd-analyze cat-config systemd/journald.conf`
+
 ## Requirements
 
 systemd with journald compiled in
 
 ## Role Variables
 
-| Name                       | Default/Required | Description                                      |
-|----------------------------|:----------------:|--------------------------------------------------|
-| `journald_config`          | `{}`             | Dict of configuration items for systemd-journald |
-| `journald_wipe_persistent` | `false`          | Wipe the persistent journal directory            |
+| Name                       | Default/Required                  | Description                                      |
+|----------------------------|:---------------------------------:|--------------------------------------------------|
+| `journald_config`          | `{}` / no                         | Dict of configuration items for systemd-journald |
+| `journald_wipe_persistent` | `false` / no                      | Wipe the persistent journal directory            |
+| `journald_config_path`     | `/etc/systemd/journald.conf` / no | Journald config file path                        |
+
+
+| Configuration path                        | Description                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------------ |
+| `/etc/systemd/journald.conf`              | default/base configuration, as defined by the local system administrator |
+| `/etc/systemd/journald.conf.d/*.conf`     | local administrator override directory (filename is an arbitrary value)  |
+| `/run/systemd/journald.conf.d/*.conf`     | runtime override directory (filename is an arbitrary value)              |
+| `/usr/lib/systemd/journald.conf.d/*.conf` | vendor package override directory                                        |
 
 ## Dependencies
 
@@ -26,13 +37,15 @@ None
 ```yml
 - hosts: all
   roles:
-  - systemd-journald
+    - stuvusit.systemd-journald
+  vars:
     journald_config:
       Storage: volatile
       RuntimeMaxUse: 1G
       ForwardToConsole: "yes"
       TTYPath: /dev/tty12
-    journald_wipe_persistent: true
+    journald_wipe_persistent: True
+    journald_config_path: /etc/systemd/journald.conf.d/99-ansible.conf
 ```
 
 ## License
